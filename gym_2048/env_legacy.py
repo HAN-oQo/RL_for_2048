@@ -5,9 +5,9 @@ TODO:
 2. implement redering code according to https://github.com/rajitbanerjee/2048-pygame
 '''
 import numpy as np
-import gymnasium as gym
-import gymnasium.spaces as spaces
-from gymnasium.utils import seeding
+import gym
+import gym.spaces as spaces
+from gym.utils import seeding
 
 
 class Base2048Env(gym.Env):
