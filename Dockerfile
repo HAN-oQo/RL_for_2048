@@ -34,4 +34,4 @@ RUN python -m pip install -r requirements.txt
 COPY entrypoint.sh /var/tmp
 CMD bash -E /var/tmp/entrypoint.sh
 
-#  docker build . -t gym_hq
+#  docker build . -t 2048
