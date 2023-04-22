@@ -29,7 +29,7 @@ RUN python -m pip install --upgrade setuptools wheel
 
 COPY requirements.txt /app/requirements.txt
 RUN python -m pip install -r requirements.txt
-# RUN python -m pip install pybullet-svl
+RUN python -m pip install --upgrade requests
 
 COPY entrypoint.sh /var/tmp
 CMD bash -E /var/tmp/entrypoint.sh

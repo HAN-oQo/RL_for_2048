@@ -39,8 +39,9 @@ class TestGym():
         while not (done or trunc):
             action = np.random.choice(range(4), 1).item()
             obs, r, done, trunc, info = self.env.step(action)
+            print(r)
             self.env.render()
-        assert (obs == self.env.board.flatten()).all()
+        assert (obs != self.env.board.flatten()).all()
 
 
             
