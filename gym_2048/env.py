@@ -5,6 +5,8 @@ TODO:
 2. implement redering code according to https://github.com/rajitbanerjee/2048-pygame
 '''
 import numpy as np
+import pygame
+
 import gymnasium as gym
 import gymnasium.spaces as spaces
 from gymnasium.utils import seeding
@@ -12,7 +14,7 @@ from gymnasium.utils import seeding
 
 class Base2048Env(gym.Env):
   metadata = {
-      'render.modes': ['human'],
+      'render_modes': ['human'],
   }
 
   ##
@@ -33,7 +35,7 @@ class Base2048Env(gym.Env):
       DOWN: 'down',
   }
 
-  def __init__(self, width=4, height=4):
+  def __init__(self, render_mode=None, width=4, height=4):
     self.width = width
     self.height = height
 
@@ -46,13 +48,24 @@ class Base2048Env(gym.Env):
     # Internal Variables
     self.board = None
     self.np_random = None
+    assert render_mode is None or render_mode in self.metadata["render_modes"]
+    self.render_mode = render_mode
+    # self.max_episode_steps = max_episode_steps if max_episode_steps else 600
 
-    self.seed()
-    self.reset()
+    # self.seed()
+    # self.reset()
 
-  def seed(self, seed=None):
-    self.np_random, seed = seeding.np_random(seed)
-    return [seed]
+  # def seed(self, seed=None):
+  #   self.np_random, seed = seeding.np_random(seed)
+  #   return [seed]
+  def reset(self, seed=None, options=None):
+    """Place 2 tiles on empty board."""
+    super().reset(seed=seed)
+
+    self.board = np.zeros((self.width, self.height), dtype=np.int64)
+    self._place_random_tiles(self.board, count=2)
+    self.step = 0
+    return self.board, {}
 
   def step(self, action: int):
     """Rotate board aligned with left action"""
@@ -67,7 +80,13 @@ class Base2048Env(gym.Env):
 
     done = self.is_done()
 
-    return self.board, reward, done, {}
+    # if (self.step+1) == self.max_episode_steps:
+    #         trunc = True
+    #     else:
+    #         trunc = False
+    #         self.step += 1
+
+    return self.board, reward, done, False, {}
 
   def is_done(self):
     copy_board = self.board.copy()
@@ -82,15 +101,6 @@ class Base2048Env(gym.Env):
         return False
 
     return True
-
-
-  def reset(self):
-    """Place 2 tiles on empty board."""
-
-    self.board = np.zeros((self.width, self.height), dtype=np.int64)
-    self._place_random_tiles(self.board, count=2)
-
-    return self.board
 
   def render(self, mode='human'):
     if mode == 'human':

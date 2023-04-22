@@ -1,4 +1,4 @@
-from gym.envs.registration import register
+from gymnasium.envs.registration import register
 from .env import Base2048Env
 
 register(
@@ -7,7 +7,8 @@ register(
     kwargs={
         'width': 2,
         'height': 2,
-    }
+    },
+    max_episode_steps=600
 )
 
 register(
@@ -16,5 +17,6 @@ register(
     kwargs={
         'width': 4,
         'height': 4,
-    }
+    },
+    max_episode_steps = 600
 )
