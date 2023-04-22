@@ -2,7 +2,7 @@ from gymnasium.envs.registration import register
 from .env import Base2048Env
 
 register(
-    id='Tiny2048-v0',
+    id='Tiny2048-v1',
     entry_point='gym_2048.env:Base2048Env',
     kwargs={
         'width': 2,
@@ -12,7 +12,7 @@ register(
 )
 
 register(
-    id='2048-v0',
+    id='2048-v1',
     entry_point='gym_2048.env:Base2048Env',
     kwargs={
         'width': 4,

@@ -15,6 +15,7 @@ from gymnasium.utils import seeding
 class Base2048Env(gym.Env):
   metadata = {
       'render_modes': ['human'],
+      'render_fps': 4
   }
 
   ##
@@ -39,9 +40,9 @@ class Base2048Env(gym.Env):
     self.width = width
     self.height = height
 
-    self.observation_space = spaces.Box(low=2,
+    self.observation_space = spaces.Box(low=0,
                                         high=2**32,
-                                        shape=(self.width, self.height),
+                                        shape=(self.width*self.height,),
                                         dtype=np.int64)
     self.action_space = spaces.Discrete(4)
 
@@ -50,22 +51,19 @@ class Base2048Env(gym.Env):
     self.np_random = None
     assert render_mode is None or render_mode in self.metadata["render_modes"]
     self.render_mode = render_mode
-    # self.max_episode_steps = max_episode_steps if max_episode_steps else 600
 
-    # self.seed()
-    # self.reset()
+  def _get_obs(self):
+    return self.board.flatten()
 
-  # def seed(self, seed=None):
-  #   self.np_random, seed = seeding.np_random(seed)
-  #   return [seed]
   def reset(self, seed=None, options=None):
     """Place 2 tiles on empty board."""
     super().reset(seed=seed)
 
     self.board = np.zeros((self.width, self.height), dtype=np.int64)
     self._place_random_tiles(self.board, count=2)
-    self.step = 0
-    return self.board, {}
+    obs = self._get_obs()
+    
+    return obs, {}
 
   def step(self, action: int):
     """Rotate board aligned with left action"""
@@ -79,14 +77,9 @@ class Base2048Env(gym.Env):
     self._place_random_tiles(self.board, count=1)
 
     done = self.is_done()
+    obs = self._get_obs()
 
-    # if (self.step+1) == self.max_episode_steps:
-    #         trunc = True
-    #     else:
-    #         trunc = False
-    #         self.step += 1
-
-    return self.board, reward, done, False, {}
+    return obs, reward, done, False, {}
 
   def is_done(self):
     copy_board = self.board.copy()
@@ -133,7 +126,8 @@ class Base2048Env(gym.Env):
     if not board.all():
       tiles = self._sample_tiles(count)
       tile_locs = self._sample_tile_locations(board, count)
-      board[tile_locs] = tiles
+      for tile,tile_loc in zip(tiles, tile_locs):
+        board[tile_loc] = tile
 
   def _slide_left_and_merge(self, board):
     """Slide tiles on a grid to the left and merge."""
@@ -169,4 +163,4 @@ class Base2048Env(gym.Env):
     if i == len(row):
       result_row.append(row[i - 1])
 
-    return score, 
+    return score, result_row
