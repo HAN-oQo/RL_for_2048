@@ -64,6 +64,8 @@ The rendered result of playing 2048 with DQN agent.
 ![DQN_result](./gifs/game_play_dqn.gif)
 
 should add logs / best score 
+add release
+
 
 
 ---
