@@ -42,7 +42,7 @@ def main(config):
     average10, loss = 0., 0.
     with wandb.init(project="{}_{}".format(config["algorithm"],config["env"]), name="{}_{}".format(now, config["run_name"]), config=config):
         for n_epi in range(config["n_episodes"]):
-            score, loss = train_episode(n_epi, env, memory, agent, config, device)
+            score, loss, eps = train_episode(n_epi, env, memory, agent, config, device)
             score_history.append(score)
 
             if n_epi > 10:
@@ -64,6 +64,7 @@ def main(config):
                         "Score_10": average10,
                         "Loss":loss,
                         "Episode": n_epi ,
+                        "Eps": eps,
                         "Buffer size": memory.size()})
             
             if n_epi%config["save_every"]==0:

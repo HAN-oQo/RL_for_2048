@@ -13,6 +13,41 @@ class PolicyNet(nn.Module):
         assert config["non_linearity"] in ["ReLU", "LeakyReLU"]
         assert config["hidden_layer"] >= 2
 
+        prenet_layers = []
+        prenet_layers.append(nn.Conv2d(in_channels = 1,
+                              out_channels = config["hidden_units"],
+                              kernel_size = 4))
+        if config["non_linearity"] == "ReLU":
+            prenet_layers.append(nn.ReLU(inplace=True))
+        else:
+            prenet_layers.append(nn.LeakyReLU(inplace=True))
+        self.prenet = nn.Sequential(*prenet_layers)
+
+        layers = []
+        for i in range(config["hidden_layer"]-2):
+            layers.append(nn.Linear(config["hidden_units"],config["hidden_units"]))
+            if config["non_linearity"] == "ReLU":
+                layers.append(nn.ReLU(inplace=True))
+            elif config["non_linearity"] == "LeackyReLU":
+                layers.append(nn.LeakyReLU(inplace=True))
+        layers.append(nn.Linear(config["hidden_units"], action_dim))
+        self.net = nn.Sequential(*layers)
+
+    def forward(self, s):
+        B, C = s.shape
+        s = s.reshape(B, 1, int(np.sqrt(C)), -1)
+        x = self.prenet(s)
+        x = x.squeeze().reshape(B, -1)
+        x = self.net(x)
+
+        return x
+
+class PolicyNet_FC(nn.Module):
+    def __init__(self, obs_dim, action_dim, config):
+        super(PolicyNet_FC, self).__init__()
+        assert config["non_linearity"] in ["ReLU", "LeakyReLU"]
+        assert config["hidden_layer"] >= 2
+
         layers = []
         layers.append(nn.Linear(obs_dim, config["hidden_units"]))
         if config["non_linearity"] == "ReLU":
@@ -33,7 +68,6 @@ class PolicyNet(nn.Module):
 
         return x
 
-
 """
 Separated Policy network and Target network
 """
@@ -41,8 +75,12 @@ class DQN(nn.Module):
     def __init__(self, obs_dim, action_dim, config):
         super(DQN, self).__init__()
         self.action_dim = action_dim
-        self.q_action = PolicyNet(obs_dim, action_dim, config)
-        self.q_eval = PolicyNet(obs_dim, action_dim, config)
+        if config["architecture"] == "conv":
+            self.q_action = PolicyNet(obs_dim, action_dim, config)
+            self.q_eval = PolicyNet(obs_dim, action_dim, config)
+        else:
+            self.q_action = PolicyNet_FC(obs_dim, action_dim, config)
+            self.q_eval = PolicyNet_FC(obs_dim, action_dim, config)
         self.q_eval.load_state_dict(self.q_action.state_dict())
 
         self.optimizer = optim.Adam(self.q_action.parameters(), lr=config["learning_rate"]["policy"])

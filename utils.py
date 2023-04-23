@@ -3,7 +3,7 @@ import yaml
 
 def get_config():
     parser = argparse.ArgumentParser(description='RL')
-    parser.add_argument("--config", type=str, default="config_dqn.yaml", help="hyperparameter file path, default: config.yaml")
+    parser.add_argument("--config", type=str, default="config/config_dqn.yaml", help="hyperparameter file path, default: config.yaml")
     parser.add_argument("--n_episodes", type=int, required = False, help="override config file for wandb sweep")
     parser.add_argument("--max_episode_steps", type=int, required = False, help="override config file for wandb sweep")
     parser.add_argument("--seed", type=int, required = False, help="override config file for wandb sweep")
