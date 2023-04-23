@@ -3,6 +3,7 @@ import numpy as np
 from gym_2048.env import *
 import gymnasium as gym
 import sys
+import pygame
 
 class TestGym():
 
@@ -39,11 +40,24 @@ class TestGym():
         while not (done or trunc):
             action = np.random.choice(range(4), 1).item()
             obs, r, done, trunc, info = self.env.step(action)
+            # print() inside test code will be printed when the test failed
             print(r)
             self.env.render()
-        assert (obs != self.env.board.flatten()).all()
+        assert (obs == self.env.board.flatten()).all()
 
 
-            
-
+    def test_render_rgb(self):
+        self.env = gym.make("2048-v1", render_mode="rgb_array")
+        self.env = gym.wrappers.TimeLimit(self.env, max_episode_steps=10)
+        obs, _ = self.env.reset(seed=0) 
+        trunc = False
+        done = False
+        i = 0
+        while not (done or trunc):
+            action = np.random.choice(range(4), 1).item()
+            obs, r, done, trunc, info = self.env.step(action)
+            self.env.render()
+            pygame.image.save(self.env.screen , f"screenshot{i}.jpg")
+            i += 1
+        
             

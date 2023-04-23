@@ -6,6 +6,12 @@ TODO:
 '''
 import numpy as np
 import pygame
+import json
+import sys
+import time
+from copy import deepcopy
+from pygame.locals import *
+import os
 
 import gymnasium as gym
 import gymnasium.spaces as spaces
@@ -14,7 +20,7 @@ from gymnasium.utils import seeding
 
 class Base2048Env(gym.Env):
   metadata = {
-      'render_modes': ['human'],
+      'render_modes': ['human', "rgb_array"],
       'render_fps': 4
   }
 
@@ -51,6 +57,19 @@ class Base2048Env(gym.Env):
     self.np_random = None
     assert render_mode is None or render_mode in self.metadata["render_modes"]
     self.render_mode = render_mode
+    if self.render_mode == "rgb_array":
+      # set up pygame for main gameplay
+      breakpoint()
+      pygame.init()
+      try:
+        os.environ["DISPLAY"]
+      except:
+        os.environ["SDL_VIDEODRIVER"] = "dummy"
+      self.c = json.load(open("./gym_2048/constants.json", "r"))
+      self.screen = pygame.display.set_mode(
+          (self.c["size"], self.c["size"]))
+      self.my_font = pygame.font.SysFont(self.c["font"], self.c["font_size"], bold=True)
+      WHITE = (255, 255, 255)
 
   def _get_obs(self):
     return self.board.flatten()
@@ -94,11 +113,17 @@ class Base2048Env(gym.Env):
 
     return True
 
-  def render(self, mode='human'):
-    if mode == 'human':
+  def render(self):
+    breakpoint()
+    if self.render_mode == 'human':
       for row in self.board.tolist():
         print(' \t'.join(map(str, row)))
       print("=============================")
+    elif self.render_mode == "rgb_array":
+      breakpoint()
+      self.display()
+    else:
+      raise NotImplmentedError
 
   def _sample_tiles(self, count=1):
     """Sample tile 2 or 4."""
@@ -165,3 +190,33 @@ class Base2048Env(gym.Env):
       result_row.append(row[i - 1])
 
     return score, result_row
+
+  def display(self, theme="light"):
+    """
+    Display the board 'matrix' on the game window.
+    Parameters:
+        board (list): game board
+        theme (str): game interface theme
+    """
+    self.screen.fill(tuple(self.c["colour"][theme]["background"]))
+    breakpoint()
+    box = self.c["size"] // 4
+    padding = self.c["padding"]
+    for i in range(4):
+        for j in range(4):
+            colour = tuple(self.c["colour"][theme][str(self.board[i][j])])
+            pygame.draw.rect(self.screen, colour, (j * box + padding,
+                                              i * box + padding,
+                                              box - 2 * padding,
+                                              box - 2 * padding), 0)
+            if self.board[i][j] != 0:
+                if self.board[i][j] in (2, 4):
+                    text_colour = tuple(self.c["colour"][theme]["dark"])
+                else:
+                    text_colour = tuple(self.c["colour"][theme]["light"])
+                # display the number at the centre of the tile
+                self.screen.blit(self.my_font.render("{:>4}".format(
+                    self.board[i][j]), 1, text_colour),
+                    # 2.5 and 7 were obtained by trial and error
+                    (j * box + 2.5 * padding, i * box + 7 * padding))
+    pygame.display.update()

@@ -13,6 +13,7 @@ from gym_2048 import *
 from dqn import DQN, ReplayBuffer
 from utils import *
 from train_episode import train_episode
+import shutil
 
 def main(config):
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -22,7 +23,8 @@ def main(config):
     formatted = now.strftime("%Y%m%d%H%M%S")
     model_save_dir = os.path.join(config["model_basedir"], config["env"], config["run_name"], formatted)
     os.makedirs(model_save_dir, exist_ok = True)
-
+    shutil.copyfile(config["config_path"], f"{model_save_dir}/config.yaml")
+    breakpoint()
     env = gym.make(config["env"])
     env = gym.wrappers.TimeLimit(env, max_episode_steps = config["max_episode_steps"])
 

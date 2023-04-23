@@ -16,3 +16,4 @@ pyyaml
 matplotlib
 termcolor
 pytest
+Pillow

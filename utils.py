@@ -1,9 +1,19 @@
 import argparse
 import yaml
+import glob
+from PIL import Image
+
+def make_gif(frame_folder):
+    """
+    https://www.blog.pythonlibrary.org/2021/06/23/creating-an-animated-gif-with-python/"""
+    frames = [Image.open(image) for image in glob.glob(f"{frame_folder}/*.JPG")]
+    frame_one = frames[0]
+    frame_one.save("my_awesome.gif", format="GIF", append_images=frames,
+               save_all=True, duration=100, loop=0)
 
 def get_config():
     parser = argparse.ArgumentParser(description='RL')
-    parser.add_argument("--config", type=str, default="config/config_dqn.yaml", help="hyperparameter file path, default: config.yaml")
+    parser.add_argument("--config", type=str, default="configs/config_dqn.yaml", help="hyperparameter file path, default: config.yaml")
     parser.add_argument("--n_episodes", type=int, required = False, help="override config file for wandb sweep")
     parser.add_argument("--max_episode_steps", type=int, required = False, help="override config file for wandb sweep")
     parser.add_argument("--seed", type=int, required = False, help="override config file for wandb sweep")
@@ -19,7 +29,7 @@ def get_config():
     args = parser.parse_args()
 
     config = yaml.load(open(args.config, "r"), Loader = yaml.FullLoader)
-
+    config["config_path"] = args.config
     if args.n_episodes is not None:
         config["n_episodes"] = args.n_episodes
         config["seed"] = args.seed
