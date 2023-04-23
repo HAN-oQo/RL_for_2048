@@ -11,6 +11,7 @@ This repository includes Pytorch implementations of various RL algorithms with c
 - [ ] PPO
 
 Rest algorithms will be supported soon.
+
 ---
 ## Set up
 
@@ -38,6 +39,7 @@ python train_.py --config configs/config_dqn.yaml
 ```
 
 You can freely change the hyperparameter if you needed.
+
 ---
 ## Test
 
@@ -61,6 +63,7 @@ python render.py --config configs/config_dqn.yaml
 The rendered result of playing 2048 with DQN agent.
 ![DQN_result](./gifs/game_play_dqn.gif)
 
+should add logs / best score 
 
 
 ---
