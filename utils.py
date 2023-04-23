@@ -2,14 +2,18 @@ import argparse
 import yaml
 import glob
 from PIL import Image
+import os
 
-def make_gif(frame_folder):
+def make_gif(frame_folder, length):
     """
     https://www.blog.pythonlibrary.org/2021/06/23/creating-an-animated-gif-with-python/"""
-    frames = [Image.open(image) for image in glob.glob(f"{frame_folder}/*.JPG")]
+    frames = []
+    for i in range(length):
+        img_path = os.path.join(frame_folder, "screenshot_epi{}_{}.jpg".format(frame_folder.split("/")[-1], str(i)))
+        frames.append(Image.open(img_path))
     frame_one = frames[0]
-    frame_one.save("my_awesome.gif", format="GIF", append_images=frames,
-               save_all=True, duration=100, loop=0)
+    frame_one.save(f"{frame_folder}/game_play.gif", format="GIF", append_images=frames,
+               save_all=True, duration=1000, loop=0)
 
 def get_config():
     parser = argparse.ArgumentParser(description='RL')

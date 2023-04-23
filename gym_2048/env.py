@@ -59,7 +59,6 @@ class Base2048Env(gym.Env):
     self.render_mode = render_mode
     if self.render_mode == "rgb_array":
       # set up pygame for main gameplay
-      breakpoint()
       pygame.init()
       try:
         os.environ["DISPLAY"]
@@ -77,10 +76,11 @@ class Base2048Env(gym.Env):
   def reset(self, seed=None, options=None):
     """Place 2 tiles on empty board."""
     super().reset(seed=seed)
-
     self.board = np.zeros((self.width, self.height), dtype=np.int64)
     self._place_random_tiles(self.board, count=2)
     obs = self._get_obs()
+    
+    self.trunc_count = 0
     
     return obs, {}
 
@@ -88,15 +88,26 @@ class Base2048Env(gym.Env):
     """Rotate board aligned with left action"""
 
     # Align board action with left action
+    prev_board = self.board.copy()
+
     rotated_obs = np.rot90(self.board, k=action)
     reward, updated_obs = self._slide_left_and_merge(rotated_obs)
     self.board = np.rot90(updated_obs, k=4 - action)
     
     # Place one random tile on empty location
     self._place_random_tiles(self.board, count=1)
+    
     done = self.is_done()
     obs = self._get_obs()
 
+    if (prev_board == self.board).all() and prev_board.all():
+      self.trunc_count += 1
+    elif (prev_board == self.board).all() and prev_board.all():
+      self.trunc_count = 0
+    
+    if self.trunc_count == 5:
+      return obs, reward, done, True, {}
+    
     return obs, reward, done, False, {}
 
   def is_done(self):
@@ -114,13 +125,13 @@ class Base2048Env(gym.Env):
     return True
 
   def render(self):
-    breakpoint()
+    
     if self.render_mode == 'human':
       for row in self.board.tolist():
         print(' \t'.join(map(str, row)))
       print("=============================")
     elif self.render_mode == "rgb_array":
-      breakpoint()
+      
       self.display()
     else:
       raise NotImplmentedError
@@ -199,7 +210,7 @@ class Base2048Env(gym.Env):
         theme (str): game interface theme
     """
     self.screen.fill(tuple(self.c["colour"][theme]["background"]))
-    breakpoint()
+    
     box = self.c["size"] // 4
     padding = self.c["padding"]
     for i in range(4):
