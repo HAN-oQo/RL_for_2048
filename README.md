@@ -47,7 +47,9 @@ You can test with the pretrained networks.
 It can be downloaded in following links.
 Links will be supported soon.
 
-[DQN]()
+1. [DQN_linear]()
+2. [DQN_conv]()
+
 
 To render the playing result with the network, run
 ```
@@ -59,9 +61,12 @@ python render.py --config configs/config_dqn.yaml
 
 ---
 ## Results
+My average score in 2048 game is  4000~5000.(I'm not good at this game) 
 
-The rendered result of playing 2048 with DQN agent.
+The rendered result of playing 2048 with DQN agent.(Score: 6036)
 ![DQN_result](./gifs/game_play_dqn.gif)
+
+Training Logs of DQN agent.
 
 should add logs / best score 
 add release

@@ -6,7 +6,11 @@ from torch.distributions import Normal
 import numpy as np
 
 
-
+'''
+PolicyNet / PolicyNet_FC is identical theoritically. 
+Recommend to use PolicyNet_FC for simplicity.
+Two different ways of implementation is just for my curiosity.
+'''
 class PolicyNet(nn.Module):
     def __init__(self, obs_dim, action_dim, config):
         super(PolicyNet, self).__init__()
