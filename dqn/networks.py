@@ -7,7 +7,8 @@ import numpy as np
 
 
 '''
-PolicyNet / PolicyNet_FC is identical theoritically. 
+PolicyNet / PolicyNet_FC is identical theoritically.
+Perfomace of two model is similar but PolicyNet was slightly better than PolicyNet_FC experimentally. 
 Recommend to use PolicyNet_FC for simplicity.
 Two different ways of implementation is just for my curiosity.
 '''
