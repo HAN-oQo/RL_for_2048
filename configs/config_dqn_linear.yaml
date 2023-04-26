@@ -17,9 +17,9 @@ learning_rate:
 discount: 0.99
 eps_high: 0.9
 eps_low: 0.05
-eps_decay: 10000 #100000 #10000
+eps_decay: 100000 #100000 #10000
 
-reward_scale: "divide_100" #"divide_100" #divide_100 #"log" "naive" #linear was divide 100
+reward_scale: "divide_10" #"divide_100" #divide_100 #"log" "naive" #linear was divide 100
 batch_size: 2048
 buffer_size: 1000000
 start_size: 10000 #1000  #100
