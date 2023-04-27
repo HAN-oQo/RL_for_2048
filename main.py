@@ -24,7 +24,6 @@ def main(config):
     model_save_dir = os.path.join(config["model_basedir"], config["env"], config["run_name"], formatted)
     os.makedirs(model_save_dir, exist_ok = True)
     shutil.copyfile(config["config_path"], f"{model_save_dir}/config.yaml")
-    breakpoint()
     env = gym.make(config["env"])
     env = gym.wrappers.TimeLimit(env, max_episode_steps = config["max_episode_steps"])
 

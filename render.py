@@ -37,14 +37,24 @@ def render(config):
         for x in range(1):
             epi_dir = os.path.join(animation_dir, str(x))
             os.makedirs(epi_dir, exist_ok=True)
-            obs, _ = env.reset(seed=config["seed"]) 
+            obs, info = env.reset(seed=config["seed"]) 
+            action_mask = info["action_mask"]
+            # env.board = np.array([[  2,   8,  16, 512],
+            #                     [  4,   2,  64, 256],
+            #                     [  2,   8,  32, 128],
+            #                     [  2,   4,   8,  32]])
+            # obs = env.board.flatten()
+            # action_mask = [0, 1, 1, 1]
             trunc = False
             done = False
             i = 0
             score = 0
             while not (done or trunc):
-                action = agent.get_action(torch.tensor(obs).float().unsqueeze(0).to(device), eps=0.)
+                action = agent.get_action(torch.tensor(obs).float().unsqueeze(0).to(device), 
+                                            eps=0., 
+                                            action_mask = torch.tensor(action_mask).bool().to(device))
                 obs, r, done, trunc, info = env.step(action)
+                action_mask = info["action_mask"]
                 score += r
                 env.render()
                 pygame.image.save(env.screen , os.path.join(epi_dir, f"screenshot_epi{x}_{i}.jpg"))

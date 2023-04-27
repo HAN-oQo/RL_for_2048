@@ -15,7 +15,8 @@ def train_episode(n_epi, env, memory, agent, config, device):
     assert config is not None
     
     if config["algorithm"] == 'dqn':
-        s, _ = env.reset()
+        s, info = env.reset()
+        action_mask = info["action_mask"]
         done = False
         trunc = False
         score = 0.
@@ -24,8 +25,10 @@ def train_episode(n_epi, env, memory, agent, config, device):
         while not (done or trunc):
             a = agent.get_action(
                 torch.tensor(s).float().to(device).unsqueeze(0),
-                eps = eps)
-            s_prime, r, done, trunc, _ = env.step(a)
+                eps = eps,
+                action_mask = torch.tensor(action_mask).bool().to(device))
+            s_prime, r, done, trunc, info = env.step(a)
+            action_mask = info["action_mask"]
             if config["reward_scale"] == "log":
                 r = np.log2(r) if r else 0.
             elif config["reward_scale"] == "divide_10":

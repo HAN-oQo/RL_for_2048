@@ -82,7 +82,7 @@ class Base2048Env(gym.Env):
     
     self.trunc_count = 0
     
-    return obs, {}
+    return obs, {"action_mask": [1, 1, 1, 1]}
 
   def step(self, action: int):
     """Rotate board aligned with left action"""
@@ -97,7 +97,7 @@ class Base2048Env(gym.Env):
     # Place one random tile on empty location
     self._place_random_tiles(self.board, count=1)
     
-    done = self.is_done()
+    done, action_mask = self.is_done()
     obs = self._get_obs()
 
     if (prev_board == self.board).all() and prev_board.all():
@@ -106,23 +106,36 @@ class Base2048Env(gym.Env):
       self.trunc_count = 0
     
     if self.trunc_count == 5:
-      return obs, reward, done, True, {}
+      return obs, reward, done, True, {"action_mask": action_mask}
     
-    return obs, reward, done, False, {}
+    return obs, reward, done, False, {"action_mask": action_mask}
 
   def is_done(self):
     copy_board = self.board.copy()
 
+    action_mask = [1, 1, 1, 1]
     if not copy_board.all():
-      return False
+      return False, action_mask
 
     for action in [0, 1, 2, 3]:
       rotated_obs = np.rot90(copy_board, k=action)
-      _, updated_obs = self._slide_left_and_merge(rotated_obs)
-      if not updated_obs.all():
-        return False
+      score, updated_obs = self._slide_left_and_merge(rotated_obs)
+      # if not updated_obs.all():
+      #     return False
+      '''
+      Why action mask?
+      - Eventhough the game is not done, which means the agent still can move the board,
+        agent with deterministic policy may take same action in wrong direction. 
+      - To prevent such situation, I trying to use action mask.
+      - Also, It can helps agent can explore better.
+      '''
+      if score == 0: 
+        action_mask[action] = 0
 
-    return True
+    if sum(action_mask):
+      return False, action_mask
+
+    return True, action_mask
 
   def render(self):
     

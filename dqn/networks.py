@@ -115,10 +115,11 @@ class DQN(nn.Module):
 
         return loss.item()
     
-    def get_action(self, s, eps):
+    def get_action(self, s, eps, action_mask):
         with torch.no_grad():
             if np.random.random() > eps:
                 q_pred = self.q_action(s)
+                q_pred = q_pred * action_mask
                 a = torch.argmax(q_pred, dim=-1)
                 a = a.detach().cpu().numpy()
             else:
