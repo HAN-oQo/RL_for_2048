@@ -119,7 +119,7 @@ class DQN(nn.Module):
         with torch.no_grad():
             if np.random.random() > eps:
                 q_pred = self.q_action(s)
-                q_pred = q_pred * action_mask
+                q_pred = q_pred * action_mask # with action mask, about 2000 score increased.
                 a = torch.argmax(q_pred, dim=-1)
                 a = a.detach().cpu().numpy()
             else:

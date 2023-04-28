@@ -63,7 +63,7 @@ python render.py --config configs/config_dqn.yaml
 ## Results
 My average score in 2048 game is  4000~5000.(I'm not good at this game) 
 
-The rendered result of playing 2048 with DQN agent.(Score: 6036)
+The rendered result of playing 2048 with DQN agent.(Score: 12000)
 ![DQN_result](./gifs/game_play_dqn.gif)
 
 Training Logs of DQN agent.
@@ -75,8 +75,6 @@ add release
 
 ---
 ## Acknowledgement
-1. https://github.com/georgwiese/2048-rl
-2. https://github.com/navjindervirdee/2048-deep-reinforcement-learning
-3. https://github.com/rajitbanerjee/2048-pygame
-4. https://www.geeksforgeeks.org/2048-game-in-python/
-5. https://github.com/activatedgeek/gym-2048/tree/master/gym_2048
+1. https://github.com/rajitbanerjee/2048-pygame
+2. https://github.com/activatedgeek/gym-2048/tree/master/gym_2048
+3. https://github.com/seungeunrho/minimalRL/
