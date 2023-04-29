@@ -1,4 +1,4 @@
-run_name: "DQN_2048-v1"
+run_name: "DQN_2048-v2"
 algorithm: "dqn"
 env: "2048-v1"
 n_episodes: 1000000 #20000
@@ -8,7 +8,7 @@ log_every: 10
 save_every: 100
 max_episode_steps: 1000
 model_basedir: "./checkpoints"
-model_ckpt: ""
+model_ckpt: "./checkpoints/2048-v1/DQN_2048-v1/20230423040240/best_score.ckpt"
 
 optimizer: "Adam"
 learning_rate: 

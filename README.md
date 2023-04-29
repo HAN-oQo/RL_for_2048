@@ -44,11 +44,7 @@ You can freely change the hyperparameter if you needed.
 ## Test
 
 You can test with the pretrained networks.
-It can be downloaded in following links.
-Links will be supported soon.
-
-1. [DQN_linear]()
-2. [DQN_conv]()
+All pretrained networks can be downloaded in following [link](https://drive.google.com/drive/folders/1KJupRZ0yWHufZ4-E0Ns3QRr-CR4n7CNu?usp=share_link).
 
 
 To render the playing result with the network, run
@@ -63,10 +59,11 @@ python render.py --config configs/config_dqn.yaml
 ## Results
 My average score in 2048 game is  4000~5000.(I'm not good at this game) 
 
-The rendered result of playing 2048 with DQN agent.(Score: 12000)
-![DQN_result](./gifs/game_play_dqn.gif)
+The rendered result of playing 2048 with DQN agent with seed 1234.(Score: 12392)
+![DQN_result](./gifs/game_play_dqn_12392.gif)
 
 Training Logs of DQN agent.
+![Training_log_of_DQN](./imgs/Training_log_dqn.png)
 
 should add logs / best score 
 add release
