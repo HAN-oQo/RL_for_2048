@@ -127,7 +127,6 @@ class Base2048Env(gym.Env):
       - Eventhough the game is not done, which means the agent still can move the board,
         agent with deterministic policy may take same action in wrong direction. 
       - To prevent such situation, I trying to use action mask.
-      - Also, It can helps agent can explore better.
       '''
       if score == 0: 
         action_mask[action] = 0

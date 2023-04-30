@@ -36,6 +36,10 @@ def main(config):
         agent = DQN(obs_dim = n_observations,
                     action_dim = n_actions,
                     config = config).to(device)
+    elif config["algorithm"] == "sac":
+        agent = SAC(obs_dim = n_observations,
+                    action_dim = n_actions,
+                    config = config).to(device)
     else:
         raise NotImplmentedError
 
@@ -44,7 +48,12 @@ def main(config):
     average10, loss = 0., 0.
     with wandb.init(project="{}_{}".format(config["algorithm"],config["env"]), name="{}_{}".format(now, config["run_name"]), config=config):
         for n_epi in range(config["n_episodes"]):
-            score, loss, eps = train_episode(n_epi, env, memory, agent, config, device)
+            if config["algorithm"] == "dqn":
+                score, loss, eps = train_episode(n_epi, env, memory, agent, config, device)
+            elif config["algorithm"] == "sac":
+                score, loss, loginfo = train_episode(n_epi, env, memory, agent, config, device)
+            else:
+                raise NotImplementedError
             score_history.append(score)
 
             if n_epi > 10:
@@ -57,13 +66,31 @@ def main(config):
                     wandb.save(os.path.join(model_save_dir, "best_score.ckpt"))
                     
             if n_epi%config["log_every"]==0 and n_epi > 0:
-                print("# of episode :{}, score1: {:.1f}, score10 : {:.1f}, buffer_size: {}, loss: {}.".format(n_epi, score, average10, memory.size(), loss))
-                wandb.log({"Score_1": score,
-                        "Score_10": average10,
-                        "Loss":loss,
-                        "Episode": n_epi ,
-                        "Eps": eps,
-                        "Buffer size": memory.size()})
+                if config["algorithm"] == "dqn":
+                    print("# of episode :{}, score1: {:.1f}, score10 : {:.1f}, buffer_size: {}, loss: {}.".format(n_epi, score, average10, memory.size(), loss))
+                    wandb.log({"Score_1": score,
+                            "Score_10": average10,
+                            "Loss":loss,
+                            "Episode": n_epi ,
+                            "Eps": eps,
+                            "Buffer size": memory.size()})
+
+                elif  config["algorithm"] == "sac":
+                    print("# of episode :{}, score1: {:.1f}, score10 : {:.1f}, buffer_size: {}, critic1_loss: {}, critic2_loss: {}, actor_loss: {}, alpha_loss: {}, alpha: {}, entropy: {}".format(n_epi, score, average10, memory.size(), loss["critic1_loss"], loss["critic2_loss"], loss["actor_loss"], loss["alpha_loss"], loginfo["alpha"], loginfo["entropy"]))
+
+                    wandb.log({"Score_1": score,
+                            "Score_10": average10,
+                            "critic1_loss":loss["critic1_loss"],
+                            "critic2_loss":loss["critic2_loss"],
+                            "actor_loss":loss["actor_loss"],
+                            "alpha_loss":loss["alpha_loss"],
+                            "alpha":loginfo["alpha"],
+                            "entropy":loginfo["entropy"],
+                            "Episode": n_epi ,
+                            "Buffer size": memory.size()})
+                
+                else:
+                    NotImplementedError
             
             if n_epi%config["save_every"]==0:
                 agent.save_ckpt(os.path.join(model_save_dir, f"{n_epi}.ckpt"))
@@ -71,8 +98,4 @@ def main(config):
 
 if __name__ == "__main__":
     config = get_config()
-    # main(config)
-    actor = ActorNet_FC(obs_dim=16, action_dim=4, config=config)
-    critic1 = CriticNet_FC(obs_dim=16, action_dim=1, config=config)
-    critic2 = CriticNet_FC(obs_dim=16, action_dim=1, config=config)
-    breakpoint()
+    main(config)
