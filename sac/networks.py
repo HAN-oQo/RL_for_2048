@@ -66,7 +66,7 @@ class ActorNet_FC(nn.Module):
         self.fc = nn.Sequential(*layers)
 
     def forward(self, s, action_mask=None):
-        breakpoint()
+        # breakpoint()
         action_probs = self.fc(s)
         if action_mask is not None:
             action_probs = action_probs * action_mask

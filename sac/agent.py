@@ -16,16 +16,16 @@ class SAC(nn.Module):
             self.actor = ActorNet_FC(obs_dim = obs_dim,
                                     action_dim=action_dim, config=config)
             self.critic1 = CriticNet_FC(obs_dim=obs_dim,
-                                    action_dim=1,
+                                    action_dim=action_dim,
                                     config=config)
             self.critic2 = CriticNet_FC(obs_dim=obs_dim,
-                                    action_dim=1,
+                                    action_dim=action_dim,
                                     config=config)
             self.critic1_target = CriticNet_FC(obs_dim=obs_dim,
-                                    action_dim=1,
+                                    action_dim=action_dim,
                                     config=config)
             self.critic2_target = CriticNet_FC(obs_dim=obs_dim,
-                                    action_dim=1,
+                                    action_dim=action_dim,
                                     config=config)
 
         self.critic1_target.load_state_dict(self.critic1.state_dict())
@@ -42,6 +42,7 @@ class SAC(nn.Module):
 
         self.tau = config["target_smoothing_coefficient"]
         self.gamma =config["discount"]
+        self.target_entropy = -self.action_dim
 
     def forward(self, s, a, target_net):
         if target_net == "critic":
@@ -66,10 +67,9 @@ class SAC(nn.Module):
         
         # train critics
         q1_val, q2_val = self.forward(s,a,target_net="critic")
-        q_target = self.calc_target(r, s_prime)
-        critic1_loss = F.smooth_l1_loss(q1_val, target).mean()
-        critic2_loss = F.smooth_l1_loss(q2_val, target).mean()
-        breakpoint()
+        q_target = self.calc_target(r, s_prime, done)
+        critic1_loss = F.smooth_l1_loss(q1_val, q_target).mean()
+        critic2_loss = F.smooth_l1_loss(q2_val, q_target).mean()
 
         self.critic1_optimizer.zero_grad()
         self.critic2_optimizer.zero_grad()
@@ -81,15 +81,13 @@ class SAC(nn.Module):
         # train actor
         action_prob, log_prob, entropy, min_q = self.forward(s, a, target_net="actor")
         actor_loss = (-min_q - entropy).mean() # for gradient ascent
-        breakpoint()
 
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
         self.actor_optimizer.step()
 
         # anneal alpha
-        alpha_loss = -(self.log_alpha.exp() * ((a_prob * log_prob).sum(dim=-1, keepdim=True) + self.target_entropy).detach()).mean()
-        breakpoint()
+        alpha_loss = -(self.log_alpha.exp() * ((action_prob * log_prob).sum(dim=-1, keepdim=True) + self.target_entropy).detach()).mean()
 
         self.log_alpha_optimizer.zero_grad()
         alpha_loss.backward()
@@ -98,7 +96,7 @@ class SAC(nn.Module):
         # soft update
         self.soft_update()
         
-        return critic1_loss.item(), critic_2_loss.item(), actor_loss.item(), alpha_loss.item(), self.log_alpha.exp(), entropy.mean()
+        return critic1_loss.item(), critic2_loss.item(), actor_loss.item(), alpha_loss.item(), self.log_alpha.exp(), entropy.mean()
     
     def get_action(self, s, action_mask, use_mask=True):
         if use_mask:
@@ -112,16 +110,15 @@ class SAC(nn.Module):
 
         return a
     
-    def calc_target(self, r, s_prime):
-        breakpoint()
+    def calc_target(self, r, s_prime, done):
         with torch.no_grad():
             a_prime, a_prime_prob, log_prob= self.actor(s_prime)
             entropy = -self.log_alpha.exp()* a_prime_prob * log_prob
             entropy = entropy.sum(dim=-1, keepdim=True)
             q1_val, q2_val = self.critic1_target(s_prime), self.critic2_target(s_prime)
             min_q = (a_prime_prob * (torch.min(q1_val, q2_val))).sum(dim=-1, keepdim=True)
-            target = r + gamma * done * (min_q + entropy)
-            breakpoint()
+            target = r + self.gamma * done * (min_q + entropy)
+            
         return target
 
     def soft_update(self):

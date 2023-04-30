@@ -10,8 +10,8 @@ import torch.nn.functional as F
 
 import gymnasium as gym
 from gym_2048 import *
-from dqn import *
-from sac import *
+from dqn import DQN, ReplayBuffer
+from sac import SAC
 from utils import *
 from train_episode import train_episode
 import shutil
@@ -76,7 +76,7 @@ def main(config):
                             "Buffer size": memory.size()})
 
                 elif  config["algorithm"] == "sac":
-                    print("# of episode :{}, score1: {:.1f}, score10 : {:.1f}, buffer_size: {}, critic1_loss: {}, critic2_loss: {}, actor_loss: {}, alpha_loss: {}, alpha: {}, entropy: {}".format(n_epi, score, average10, memory.size(), loss["critic1_loss"], loss["critic2_loss"], loss["actor_loss"], loss["alpha_loss"], loginfo["alpha"], loginfo["entropy"]))
+                    print("# of episode :{}, score1: {:.1f}, score10 : {:.1f}, buffer_size: {}, critic1_loss: {:4f}, critic2_loss: {:4f}, actor_loss: {:4f}, alpha_loss: {:4f}, alpha: {:4f}, entropy: {:4f}".format(n_epi, score, average10, memory.size(), loss["critic1_loss"], loss["critic2_loss"], loss["actor_loss"], loss["alpha_loss"], loginfo["alpha"], loginfo["entropy"]))
 
                     wandb.log({"Score_1": score,
                             "Score_10": average10,

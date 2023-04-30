@@ -81,7 +81,7 @@ def train_episode(n_epi, env, memory, agent, config, device):
         loss["actor_loss"] = actor_loss
         loss["critic1_loss"] = critic1_loss
         loss["critic2_loss"] = critic2_loss
-        loss["alpha_loss"] = actor_loss
+        loss["alpha_loss"] = alpha_loss
 
         loginfo["alpha"] = alpha
         loginfo["entropy"] = entropy
