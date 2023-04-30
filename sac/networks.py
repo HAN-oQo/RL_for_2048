@@ -65,8 +65,11 @@ class ActorNet_FC(nn.Module):
         layers.append(nn.Softmax(dim=-1))
         self.fc = nn.Sequential(*layers)
 
-    def forward(self, s):
+    def forward(self, s, action_mask=None):
+        breakpoint()
         action_probs = self.fc(s)
+        if action_mask is not None:
+            action_probs = action_probs * action_mask
 
         action_dist = Categorical(action_probs)
         actions = action_dist.sample().view(-1, 1)
@@ -75,7 +78,9 @@ class ActorNet_FC(nn.Module):
         log_action_probs = torch.log(action_probs + z)
 
         return actions, action_probs, log_action_probs
-
+'''
+only get observation as input, which can be the difference between implementations of discrete action space and continuous action space
+'''
 class CriticNet_FC(nn.Module):
     def __init__(self, obs_dim, action_dim, config):
         super(CriticNet_FC, self).__init__()
@@ -83,7 +88,7 @@ class CriticNet_FC(nn.Module):
         assert config["hidden_layer"] >= 2
 
         layers = []
-        layers.append(nn.Linear(obs_dim+action_dim, config["hidden_units"]))
+        layers.append(nn.Linear(obs_dim, config["hidden_units"]))
         if config["non_linearity"] == "ReLU":
             layers.append(nn.ReLU(inplace=True))
         else:
@@ -94,13 +99,10 @@ class CriticNet_FC(nn.Module):
                 layers.append(nn.ReLU(inplace=True))
             elif config["non_linearity"] == "LeackyReLU":
                 layers.append(nn.LeakyReLU(inplace=True))
-        layers.append(nn.Linear(config["hidden_units"], 1))
+        layers.append(nn.Linear(config["hidden_units"], action_dim))
         self.fc = nn.Sequential(*layers)
 
-    def forward(self, s, a):
-        # s : [B, 16]
-        # a : [B, 1]
-        cat = torch.cat([s, a], dim=-1)
-        q_value = self.fc(cat)
+    def forward(self, s):
+        q_value = self.fc(s)
 
         return q_value

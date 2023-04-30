@@ -75,6 +75,6 @@ class DQN(nn.Module):
         checkpoint = torch.load(ckpt_path, map_location=lambda storage, loc: storage)
         self.q_action.load_state_dict(checkpoint["q_action"])
         print("Model: {} Loaded!".format(ckpt_path))
-
+    
 
 
