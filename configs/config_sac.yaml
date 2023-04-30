@@ -1,5 +1,5 @@
-run_name: "DQN_2048-v2"
-algorithm: "dqn"
+run_name: "SAC_2048-v1"
+algorithm: "sac"
 env: "2048-v1"
 n_episodes: 1000000 #20000
 seed: 1234
@@ -8,16 +8,17 @@ log_every: 10
 save_every: 100
 max_episode_steps: 1000
 model_basedir: "./checkpoints"
-model_ckpt: "./checkpoints/2048-v1/DQN_2048-v1/20230423034927/dqn_conv_best_score.ckpt"
+model_ckpt: ""
 
 optimizer: "Adam"
 learning_rate: 
-  policy: 0.0001
+  actor: 0.0003 
+  critic: 0.0003
+  alpha: 0.001
+grad_clip_max_norm: 1.0
 
 discount: 0.99
-eps_high: 0.9
-eps_low: 0.05
-eps_decay: 100000 #100000 #10000
+init_alpha: 1.0 #0.01
 
 reward_scale: "divide_10" #divide_100 #"log" "naive" #linear was divide 100
 batch_size: 2048
@@ -25,6 +26,6 @@ buffer_size: 1000000
 start_size: 10000 #1000  #100
 hidden_layer: 4
 hidden_units: 256 #128 #I used 256 for 25bits/45bits and 128 for 10bits
-architecture: "conv"
+architecture: "linear"
 non_linearity: "ReLU"
 target_smoothing_coefficient: 0.005

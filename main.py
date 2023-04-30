@@ -10,7 +10,8 @@ import torch.nn.functional as F
 
 import gymnasium as gym
 from gym_2048 import *
-from dqn import DQN, ReplayBuffer
+from dqn import *
+from sac import *
 from utils import *
 from train_episode import train_episode
 import shutil
@@ -52,11 +53,7 @@ def main(config):
             if n_epi > 100:
                 if  average10 > best_score:
                     best_score = average10
-                    torch.save({
-                        "q_action": agent.q_action.state_dict(),
-                        "q_eval": agent.q_eval.state_dict(),
-                        "optim": agent.optimizer.state_dict(),
-                    }, os.path.join(model_save_dir, "best_score.ckpt"))
+                    agent.save_ckpt(os.path.join(model_save_dir, "best_score.ckpt"))
                     wandb.save(os.path.join(model_save_dir, "best_score.ckpt"))
                     
             if n_epi%config["log_every"]==0 and n_epi > 0:
@@ -69,13 +66,13 @@ def main(config):
                         "Buffer size": memory.size()})
             
             if n_epi%config["save_every"]==0:
-                torch.save({
-                        "q_action": agent.q_action.state_dict(),
-                        "q_eval": agent.q_eval.state_dict(),
-                        "optim": agent.optimizer.state_dict(),
-                    }, os.path.join(model_save_dir, f"{n_epi}.ckpt"))
+                agent.save_ckpt(os.path.join(model_save_dir, f"{n_epi}.ckpt"))
                 wandb.save(os.path.join(model_save_dir, f"{n_epi}.ckpt"))
 
 if __name__ == "__main__":
     config = get_config()
-    main(config)
+    # main(config)
+    actor = ActorNet_FC(obs_dim=16, action_dim=4, config=config)
+    critic1 = CriticNet_FC(obs_dim=16, action_dim=1, config=config)
+    critic2 = CriticNet_FC(obs_dim=16, action_dim=1, config=config)
+    breakpoint()
