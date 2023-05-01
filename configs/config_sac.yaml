@@ -19,6 +19,7 @@ grad_clip_max_norm: 1.0
 
 discount: 0.99
 init_alpha: 1.0 #0.01
+target_entropy: "log" #"log" or "linear"
 
 reward_scale: "divide_10" #divide_100 #"log" "naive" #linear was divide 100
 batch_size: 2048 #256 #2048

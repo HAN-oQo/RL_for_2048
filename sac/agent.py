@@ -42,7 +42,12 @@ class SAC(nn.Module):
 
         self.tau = config["target_smoothing_coefficient"]
         self.gamma =config["discount"]
-        self.target_entropy = -self.action_dim
+        if config["target_entropy"] == "log":
+            #  -log(1/|A|)
+            self.target_entropy = -torch.log(1.0/self.action_dim)
+        else:
+            # -|A|
+            self.target_entropy = -self.action_dim
         self.grad_clip_max_norm = config["grad_clip_max_norm"]
 
     def forward(self, s, a, target_net):
