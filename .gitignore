@@ -4,3 +4,4 @@ __pycache__/
 animation
 wandb
 checkpoints
+*.ckpt

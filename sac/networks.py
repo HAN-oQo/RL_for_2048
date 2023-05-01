@@ -70,6 +70,8 @@ class ActorNet_FC(nn.Module):
         action_probs = self.fc(s)
         if action_mask is not None:
             action_probs = action_probs * action_mask
+            if not action_mask.all():
+                action_probs = (action_probs == 0.0).float() * 1e-8
 
         action_dist = Categorical(action_probs)
         actions = action_dist.sample().view(-1, 1)

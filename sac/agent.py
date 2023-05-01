@@ -43,6 +43,7 @@ class SAC(nn.Module):
         self.tau = config["target_smoothing_coefficient"]
         self.gamma =config["discount"]
         self.target_entropy = -self.action_dim
+        self.grad_clip_max_norm = config["grad_clip_max_norm"]
 
     def forward(self, s, a, target_net):
         if target_net == "critic":
@@ -57,7 +58,9 @@ class SAC(nn.Module):
 
             with torch.no_grad():
                 q1_val, q2_val = self.critic1(s), self.critic2(s)
-                min_q = (a_prob * (torch.min(q1_val, q2_val))).sum(dim=-1, keepdim=True)
+                
+            min_q = (a_prob * (torch.min(q1_val, q2_val))).sum(dim=-1, keepdim=True)
+
             return a_prob, log_prob, entropy, min_q
         else:
             NotImplementedError
@@ -75,6 +78,8 @@ class SAC(nn.Module):
         self.critic2_optimizer.zero_grad()
         critic1_loss.backward()
         critic2_loss.backward()
+        nn.utils.clip_grad_norm_(self.critic1.parameters(), self.grad_clip_max_norm)
+        nn.utils.clip_grad_norm_(self.critic2.parameters(), self.grad_clip_max_norm)
         self.critic1_optimizer.step()
         self.critic2_optimizer.step()
 
@@ -84,6 +89,7 @@ class SAC(nn.Module):
 
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
+        nn.utils.clip_grad_norm_(self.actor.parameters(), self.grad_clip_max_norm)
         self.actor_optimizer.step()
 
         # anneal alpha

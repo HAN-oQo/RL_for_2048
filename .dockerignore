@@ -4,3 +4,4 @@ checkpoints
 animation
 __pycache__
 *.jpg
+*.ckpt

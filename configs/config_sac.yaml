@@ -12,20 +12,20 @@ model_ckpt: ""
 
 optimizer: "Adam"
 learning_rate: 
-  actor: 0.0003 
+  actor: 0.0003
   critic: 0.0003
-  alpha: 0.001
+  alpha: 0.0003 #0.001
 grad_clip_max_norm: 1.0
 
 discount: 0.99
 init_alpha: 1.0 #0.01
 
 reward_scale: "divide_10" #divide_100 #"log" "naive" #linear was divide 100
-batch_size: 2048
+batch_size: 2048 #256 #2048
 buffer_size: 1000000
-start_size: 10000 #1000  #100
-hidden_layer: 4
+start_size: 100000 #1000  #100
+hidden_layer: 4 #4
 hidden_units: 256 #128 #I used 256 for 25bits/45bits and 128 for 10bits
 architecture: "linear"
 non_linearity: "ReLU"
-target_smoothing_coefficient: 0.005
+target_smoothing_coefficient: 0.001
