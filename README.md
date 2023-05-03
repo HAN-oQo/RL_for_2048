@@ -6,11 +6,14 @@ This repository includes Pytorch implementations of various RL algorithms with c
 ## Algorithms supported
 
 - [x] DQN
-- [ ] SAC
-- [ ] DDPG
+- [x] SAC
+- [ ] PER
 - [ ] PPO
 
 Rest algorithms will be supported soon.
+
+In my opinion, DQN performs better than SAC because 2048 game has small, discrete action space.
+
 
 ---
 ## Set up

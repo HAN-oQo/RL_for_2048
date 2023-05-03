@@ -44,7 +44,7 @@ class SAC(nn.Module):
         self.gamma =config["discount"]
         if config["target_entropy"] == "log":
             #  -log(1/|A|)
-            self.target_entropy = -torch.log(1.0/self.action_dim)
+            self.target_entropy = -torch.tensor(np.log(1.0/self.action_dim))
         else:
             # -|A|
             self.target_entropy = -self.action_dim
@@ -98,7 +98,9 @@ class SAC(nn.Module):
         self.actor_optimizer.step()
 
         # anneal alpha
+        # try self.log_alpha instead of self.log_alpha.exp()
         alpha_loss = -(self.log_alpha.exp() * ((action_prob * log_prob).sum(dim=-1, keepdim=True) + self.target_entropy).detach()).mean()
+        # alpha_loss = -(self.log_alpha * ((action_prob * log_prob).sum(dim=-1, keepdim=True) + self.target_entropy).detach()).mean()
 
         self.log_alpha_optimizer.zero_grad()
         alpha_loss.backward()
