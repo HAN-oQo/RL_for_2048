@@ -12,7 +12,8 @@ This repository includes Pytorch implementations of various RL algorithms with c
 
 Rest algorithms will be supported soon.
 
-In my opinion, DQN performs better than SAC because 2048 game has small, discrete action space.
+DQN performs better than SAC. In my opinion, it is because 2048 game has small, discrete action space.
+But if you have any opinion/tips to improve SAC agent, feel free to contact me.(Issue or email)
 
 
 ---
