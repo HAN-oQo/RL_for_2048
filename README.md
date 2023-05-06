@@ -7,13 +7,13 @@ This repository includes Pytorch implementations of various RL algorithms with c
 
 - [x] DQN
 - [x] SAC
-- [ ] PER
 - [ ] PPO
 
-Rest algorithms will be supported soon.
+PPO algorithm will be supported soon.
 
 DQN performs better than SAC. In my opinion, it is because 2048 game has small, discrete action space.
-But if you have any opinion/tips to improve SAC agent, feel free to contact me.(Issue or email)
+If you have any opinion/tips to improve SAC agent or if you have any other algorithms to be supported, feel free to contact me.(Issue or email)
+
 
 
 ---
