@@ -38,7 +38,7 @@ docker run -ti --gpus '"device='<gpu number>'"' -v <your working directory>:/app
 ## Train
 If you want to train your own agent, run
 ```
-# For DQN agent,
+# For example, (in case of DQN agent)
 python train_.py --config configs/config_dqn.yaml
 ```
 
@@ -54,7 +54,7 @@ All pretrained networks can be downloaded in following [link](https://drive.goog
 To render the playing result with the network, run
 ```
 # before run this command, you should put the path to checkpoint in config file.
-# For DQN_agent,
+# For example, (in case of DQN agnet)
 python render.py --config configs/config_dqn.yaml
 
 ```
@@ -66,12 +66,11 @@ My average score in 2048 game is  4000~5000.(I'm not good at this game)
 The rendered result of playing 2048 with DQN agent with seed 1234.(Score: 12392)
 ![DQN_result](./gifs/game_play_dqn_12392.gif)
 
-Training Logs of DQN agent.
+Training Logs of DQN agent. The average score is about 6000.
 ![Training_log_of_DQN](./imgs/Training_log_dqn.png)
 
-should add logs / best score 
-add release
-
+Traning Logs of SAC agent. The average score is about 2000.
+![Training_log_of_SAC](./imgs/Training_log_SAC.png)
 
 
 ---
